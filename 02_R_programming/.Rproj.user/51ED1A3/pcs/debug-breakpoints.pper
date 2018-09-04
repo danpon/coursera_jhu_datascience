@@ -1,0 +1,21 @@
+{
+    "debugBreakpointsState" : {
+        "breakpoints" : [
+            {
+                "editor_line_number" : 16,
+                "editor_state" : 1,
+                "function_name" : "makeCacheMatrix",
+                "function_steps" : "3,3,3,3",
+                "id" : 0,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 16,
+                "needs_updated_steps" : false,
+                "package_name" : "",
+                "path" : "C:/Dev/ProgrammingAssignment2/cachematrix.R",
+                "state" : 1,
+                "type" : 0
+            }
+        ]
+    }
+}
