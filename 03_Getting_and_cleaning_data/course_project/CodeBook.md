@@ -1,18 +1,17 @@
+
 This dataset has been obtained by tidying the following dataset :
 
-Human Activity Recognition Using Smartphones Dataset
-Version 1.0
-==================================================================
+**Human Activity Recognition Using Smartphones Dataset**
+
 Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto.
 Smartlab - Non Linear Complex Systems Laboratory
 DITEN - Università degli Studi di Genova.
 Via Opera Pia 11A, I-16145, Genoa, Italy.
 activityrecognition@smartlab.ws
 www.smartlab.ws
-==================================================================
 
 which can be found at :
-https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+[https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip](https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
 
 More specifically, the folowing operations have been applied to the original dataset files
 
@@ -39,7 +38,7 @@ More specifically, the folowing operations have been applied to the original dat
    
 The resulting variables are the following : 
 
-"subject"
+**"subject"
 "activity"
 "time.bodyacc.mean.x"
 "time.bodyacc.mean.y"
@@ -106,7 +105,7 @@ The resulting variables are the following :
 "freq.bodybodygyromag.mean"
 "freq.bodybodygyromag.std"
 "freq.bodybodygyrojerkmag.mean"
-"freq.bodybodygyrojerkmag.std"
+"freq.bodybodygyrojerkmag.std"**
 
 5) The original data set contained several observations for each (subject,activity)
 In the processed, tidied dataset for each (subject,activity) there's only row with average values for each variables
