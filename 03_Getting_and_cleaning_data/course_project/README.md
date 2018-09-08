@@ -8,14 +8,14 @@
 - The working directory structure is :
 	- sub-directory "data_input" which contains the orginal dataset files 
 	- sub-directory "data_output" which contained the processed data
-	- R script "run_analysis.R" whic process the data
-	- file "cookbook.tx" describes the variables
+	- R script "run_analysis.R" which processes the data
+	- file "cookbook.txt" describes the variables
 
 ### how to use
 
 - check that :
 	- the working directory is the directory containing "run_analysis.R"
 	- original dataset files are in the sub-directory "data_input"
-- in R console or RStudio type : **source("Run_analysis.R")**
+- in R console or RStudio type : **source("run_analysis.R")**
 - the processed dataset file is then created : *data_output/tidydata.txt*
 
