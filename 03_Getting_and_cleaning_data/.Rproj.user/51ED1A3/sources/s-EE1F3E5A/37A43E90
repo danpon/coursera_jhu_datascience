@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536066772014.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "925979502",
+    "id" : "37A43E90",
+    "lastKnownWriteTime" : 1536083715,
+    "last_content_update" : 1536083715398,
+    "path" : "C:/Dev/datasciencecoursera/03_Getting_and_cleaning_data/quizz_week_1.R",
+    "project_path" : "quizz_week_1.R",
+    "properties" : {
+        "cursorPosition" : "42,37",
+        "scrollLine" : "26",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

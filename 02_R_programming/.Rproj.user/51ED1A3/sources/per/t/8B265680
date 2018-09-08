@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1535984173086.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3522142191",
+    "id" : "8B265680",
+    "lastKnownWriteTime" : 1536053399,
+    "last_content_update" : 1536053399966,
+    "path" : "C:/Dev/datasciencecoursera/02_R_programming/rankall.R",
+    "project_path" : "rankall.R",
+    "properties" : {
+        "cursorPosition" : "44,8",
+        "scrollLine" : "37"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
