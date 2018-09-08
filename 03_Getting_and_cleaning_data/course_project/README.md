@@ -9,7 +9,7 @@
 	- sub-directory "data_input" which contains the orginal dataset files 
 	- sub-directory "data_output" which contained the processed data
 	- R script "run_analysis.R" which processes the data
-	- file "cookbook.txt" describes the variables
+	- file "CodeBook.md" describes the variables and the transformations from the original datasets 
 
 ### how to use
 
