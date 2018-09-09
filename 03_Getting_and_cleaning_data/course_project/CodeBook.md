@@ -1,4 +1,3 @@
-
 This dataset has been obtained by tidying the following dataset :
 
 **Human Activity Recognition Using Smartphones Dataset**
@@ -13,31 +12,22 @@ www.smartlab.ws
 which can be found at :
 [https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip](https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
 
-More specifically, the folowing operations have been applied to the original dataset files
 
+### Tidying process ####
 
-1) Merge the training and test datasets and bind them in a single dataset :
+The folowing operations have been applied to the original dataset files (more details in the README.md file)
 
-   - Merge subject_train.txt and subject_test.txt
-   - Merge y_train.txt and y_test.txt
-   - Merge X_train.txt and X_test.txt
-   - Bind subject, y and X in single dataset
-     (1st column : subject, 2nd column : y - i.e activity, next columns X)
-   
+1) Merge the training and test datasets (subject, y, x) and bind them in a single dataset 
 2) Extract only the measurements on the mean and standard deviation for each measurement	 
-  
 3) Replace the activities numeric values by labels 
    (from the file "activity_labels.txt" in the original dataset)
- 
-4) Rename the variable names accoriding to the following rules :
-   - all variables are lower cases
-   - name starting with "t" have been replaced by names starting with "time."   
-   - name starting with "f" have been replaced by names starting with "freq."   
-   - "-" replaced by "."
-   - parenthesis have been removed 
-   
-The resulting variables are the following : 
+4) Rename the variable names to remove parenthesis, replace "-", by ".", ensure that all names are lower 
+   cases and replace "t" and "f" prefixes by the more explicit "time."and "freq."
+5) The original data set contained several observations for each (subject,activity)
+   In the processed, tidied dataset for each (subject,activity) there's only row with average values for each variables
 
+### List of variables ####
+   
 **"subject"
 "activity"
 "time.bodyacc.mean.x"
@@ -107,5 +97,4 @@ The resulting variables are the following :
 "freq.bodybodygyrojerkmag.mean"
 "freq.bodybodygyrojerkmag.std"**
 
-5) The original data set contained several observations for each (subject,activity)
-In the processed, tidied dataset for each (subject,activity) there's only row with average values for each variables
+
