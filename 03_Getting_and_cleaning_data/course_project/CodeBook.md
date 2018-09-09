@@ -28,7 +28,6 @@ The folowing operations have been applied to the original dataset files (more de
 
 ### List of variables ####
    
-**
 - subject
 - activity
 - time.bodyacc.mean.x
@@ -96,6 +95,6 @@ The folowing operations have been applied to the original dataset files (more de
 - freq.bodybodygyromag.mean
 - freq.bodybodygyromag.std
 - freq.bodybodygyrojerkmag.mean
-- freq.bodybodygyrojerkmag.std**
+- freq.bodybodygyrojerkmag.std
 
 
