@@ -144,7 +144,7 @@ library(ggplot2)
 
 stepsByIntervalAndTypeofDay <-  dataComplete %>% 
                                 group_by(type.of.day,interval) %>% 
-                                summarize(steps=sum(steps))
+                                summarize(steps=mean(steps))
 
 # CAUTION : "interval" uses a string format ("hhmm") to represent time
 # e.g. 105 = 1h05min, 1215 = 12h15min, etc...
