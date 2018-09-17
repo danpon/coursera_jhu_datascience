@@ -1,0 +1,104 @@
+---
+title: "Reproducible Research - Course Project 1"
+author: "Daniel Pont"
+date: "16 septembre 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading and preprocessing the data
+
+1. Loading the data :
+
+```{r load}
+data <- read.csv(file="data/activity.csv", na.strings  = "NA", stringsAsFactors = FALSE)
+str(data)
+```
+
+2. Preprocessing the data :
+
+```{r preprocess}
+# convert from character format to date format
+data$date <- as.Date(data$date)
+```
+
+### What is mean total number of steps taken per day?
+
+1. Calculate the total number of steps taken per day
+
+```{r calculate_total_steps_by_day}
+total_steps_by_day <- with(data, tapply(steps,date,sum))
+head(total_steps_by_day)
+```
+
+2. Plot the histogram
+
+```{r histogram_steps_by_day}
+hist(total_steps_by_day)
+```
+
+3. Calculate the mean and median
+```{r mean_meadian_steps_by_day}
+summary(total_steps_by_day)
+```
+
+  
+### What is the average daily activity pattern?
+
+1. Time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```{r calculate_mean_steps_by_inter}
+mean_steps_by_interval <- with(data, tapply(steps,interval,mean,na.rm=TRUE))
+# CAUTION : "interval" uses a string format ("hhmm") to represent time
+# e.g. 105 = 1h05min, 1215 = 12h15min, etc...
+# so you can not use interval values as x values for the plot
+# if not you will have values at x = ...,50,55,100,105,... 
+# instead of x= ...,50,55,60,65,...
+interval <- as.numeric(names(mean_steps_by_interval)) 
+intervalToTime <- function(interval)
+{
+    hours <- interval%/%100
+    minutes <- interval %%100
+    return(60*hours+minutes)
+}    
+time <- sapply(interval,intervalToTime)
+plot(x = time,y=mean_steps_by_interval,type="l",xaxt="n")
+axis(side=1, at=c(0,240,480,720,960,1200,1440),
+        labels=c("0h","4h","8h","12h","16h","20h","24h"))
+```
+
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r calculate_inter_with_max_steps}
+indexIntervalWithMax <- which(mean_steps_by_interval==max(mean_steps_by_interval) )
+print(paste("Interval with max steps :",interval[indexIntervalWithMax]))
+```
+
+### Imputing missing values
+
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NA
+
+```{r calculate_nb_rows_with_NA}
+table(is.na(data))
+paste("There are", table(is.na(data))[["TRUE"]], "rows with NA values")
+```
+
+2. Devise a strategy for filling in all of the missing values in the dataset.
+```{r filling_NA_values}
+# clone the original dataframe
+dataComplete <- data[,]
+# find NA rows indexes
+indexNaRow <- which(is.na(data))
+# replace missing value with the average number of steps for the interval
+for (i in indexNaRow){
+   # find the interval for the missing value
+    interval <- data[i,"interval"]
+    # find the mean number of steps fo the intervall
+    meanValueForInterval <- mean_steps_by_interval[as.character(interval)]
+    # replace the mising value by the mean for the interval
+    dataComplete[i,"steps"] <- meanValueForInterval
+}
+head(dataComplete)
+```
