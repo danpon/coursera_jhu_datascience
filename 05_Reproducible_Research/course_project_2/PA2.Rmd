@@ -1,0 +1,334 @@
+---
+title: "Impact of major weather events on U.S public health and economy (1950-2011)"
+author: "Daniel Pont"
+date: '2018-09-20'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(downloader)
+library(dplyr)
+library(reshape)
+library(ggplot2)
+```
+
+## Synopsis
+In this report we aim to present the impact on public health and economy of major weather events in the United States between 1950 and november 2011. We obtained
+and analyzed the  U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database for this period. The database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. From these data,
+we found that :
+
+* Fatalies are mostly due to tornadoes, followed far behind by excessive heat and flash floods
+* Injuries apart from tornadoes, heat and floods are caused by wind and lightnings
+* Property Damages are mainly caused by floods
+* Crop Damages are mainly caused by droughts
+
+## Loading and processing the data
+From the he U.S. National Oceanic and Atmospheric Administration's (NOAA) [Storm database](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2) we obtained raw data. National Weather Service provides [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf). The National Climatic Data Center also provides [Storm events FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf).
+
+### Reading in the data
+
+We first download the compressed csv datafile into the "./data" directory (automatically created if it doesn't exist), then load the file it in The R environement.
+We use the file first line as header to define the dataset column names.
+
+```{r cache=TRUE}
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+dataDir <- "data"
+dataFile <- paste(dataDir,"StormData.csv.bz2",sep="/")
+if(!dir.exists(dataDir)){ 
+    dir.create(dataDir) 
+}
+download.file(url,destfile=dataFile)
+data <- read.table(file = dataFile, sep = ",",header=TRUE)
+```
+
+We then check the dimension and the structure of the dataset
+```{r}
+str(data)
+```
+
+For our analysis the relevant variables are :
+
+* **EVTYPE** : the type of weather event
+* **FATALITIES** : the  number of fatalities
+* **INJURIES** : the  number of injuries
+* **PROPDMG** / **PROPDMGEXP** : the  cost of property damage
+* **CROPDMG** / **CROPDMGEXP** : the  cost of crop damage
+
+### Processing the data relative to fatalities
+We extract the total fatalities by event type and order them
+in descending order. Doing so ensures that the event types with
+the highest fatalities are on top of the dataset.
+
+```{r}
+fatalitiesByEvType <- data %>% 
+                    select(FATALITIES,EVTYPE)%>% 
+                    filter(FATALITIES!=0)%>% 
+                    group_by(EVTYPE) %>% 
+                    summarize(FATALITIES=sum(FATALITIES)) %>%
+                    arrange(desc(FATALITIES))
+```
+
+Let's check the dimension of fatalitiesByEvType :
+
+```{r}
+dim(fatalitiesByEvType)
+```
+
+There are 168 observations. We take a glance at the first rows, to get an idea of which event types cause the highest fatalities :
+
+```{r}
+head(fatalitiesByEvType,n=10)
+```
+
+Judging by the result above, we can focus on a small subset of event types which
+cause the vast majority of fatalities. We'll select the first 25.
+
+```{r}
+fatalitiesByEvType <- fatalitiesByEvType[1:25,]
+```
+
+### Processing the data relative to the injuries
+
+We extract the total injuries by event type and order them
+in descending order. Doing so ensures that the event types with
+the highest injuries are on top of the dataset.
+
+```{r}
+injuriesByEvType <- data %>% 
+    select(INJURIES,EVTYPE)%>% 
+    filter(INJURIES!=0)%>% 
+    group_by(EVTYPE) %>% 
+    summarize(INJURIES=sum(INJURIES)) %>%
+    arrange(desc(INJURIES))
+```
+
+Let's check the dimension of injuriesByEvType :
+
+```{r}
+dim(injuriesByEvType)
+```
+
+There are 158 observations, the first rows are :
+```{r}
+head(injuriesByEvType,n=10)
+```
+
+As we noted with the fatalities, a few event types are responsible for a vast percentage of the injuries. Hence we'll keep only the 25 first rows.
+
+```{r}
+injuriesByEvType <- injuriesByEvType[1:25,]
+```
+
+### Processing the data relative to the property and crop damages
+
+Property and crop damages are measured with 4 variables :
+
+* **PROPDMG** / **PROPDMGEXP** 
+* **CROPDMG** / **CROPDMGEXP**
+
+PROPDMG and CROPDMG contain numeric values so their can be processed
+in a straight forward fashion.
+
+PROPDMGEXP and CROPDMGEXP are alphanumeric factors. We have to examine them more closely
+
+```{r}
+table(data$PROPDMGEXP)
+table(data$CROPDMGEXP)
+```
+
+By examining PROPDMGEXP and CROPDMGEXP, we understand they are  exponents that should be multiplied respectively by PROPDMG and CROPDMG. 
+Their numerical values equivalent are listed in the following table ;
+
+| PROPDMGEXP / CROPDMGEXP | numeric value |
+| :---------------------: | ------------: |
+| b, B                    | 1 000 000 000 |
+| m, M                    |     1 000 000 |
+| k, K                    |         1 000 |
+| h, H                    |           100 |
+
+The exponent values absent from this table (-,?,+0,1,2,3,..) are more
+difficult to understand. Due to their very low frequency, we'll ignore them.
+
+To calculate damage cost from both PROPDMG/PROPDMGEXP and CROPDMG/CROPDMGEXP 
+we'll use the following function
+
+```{r}
+calculateValue <- function(base,exp){
+    if (!is.numeric(base))
+    {
+        return(0)
+    }
+    value <- 0
+    exp <- tolower(exp)
+    if(exp==""){
+        value <- base
+    }
+    if(exp=="b"){
+        value <- base*10^9
+    } else if(exp=="m"){
+        value <- base*10^6
+    } else if(exp=="k"){
+        value <- base*1000
+    }
+    else if(exp=="h"){
+        value <- base*100
+    }    
+    return(value)
+}
+```
+
+We select the columns EVTYPE, PROPDMG, PROPDMGEXP, CROPDMG, CROPDMGEXP from the
+orignal dataset and add 2 columns :
+
+* PROPERTY.DAMAGE = calculateValue(PROPDMG,PROPDMGEXP)
+* CROP.DAMAGE = calculateValue(CROPDMG,CROPDMGEXP)
+
+thus we get the dataset "damages" :
+
+```{r}
+damages <- data %>% select(EVTYPE,PROPDMG,PROPDMGEXP,CROPDMG,CROPDMGEXP) %>% 
+            rowwise() %>% 
+            mutate(PROPERTY.DAMAGE=calculateValue(PROPDMG,PROPDMGEXP))
+damages <-  damages %>%
+            rowwise() %>%
+            mutate(CROP.DAMAGE=calculateValue(CROPDMG,CROPDMGEXP))
+```
+
+Applying the same methodology we used for fatalities and injuries, we calculate
+the sum of PROPERTY.DAMAGE and CROP.DAMAGE by event type :
+
+```{r}
+damagesByEvType <- damages %>% 
+                    group_by(EVTYPE) %>%
+                    summarize(PROPERTY.DAMAGE=sum(PROPERTY.DAMAGE),
+                              CROP.DAMAGE=sum(CROP.DAMAGE) )
+```
+
+next we add a new column TOTAL = PROPERTY.DAMAGE+CROP.DAMAGE 
+to the dataset "damagesByEvType"
+
+```{r}
+damagesByEvType$TOTAL <-    damagesByEvType$PROPERTY.DAMAGE +
+                            damagesByEvType$CROP.DAMAGE
+```
+
+then we ensure that the highest TOTAL values are at the top of "damagesByEvType"
+
+```{r}
+damagesByEvType <- damagesByEvType %>% arrange(desc(TOTAL))
+```
+
+now we can take a quick glance at the processed data :
+
+```{r}
+head(damagesByEvType,n=10)
+```     
+
+as with the fatalities and injuries, a small subset of event types are responsible for the main damages. We'll focus on the 15 leading ones.
+
+```{r}
+damagesByEvType <- damagesByEvType[1:15,]
+```
+
+## Results
+
+### Fatalities
+
+The total number of fatalities per weather event type can be displayed with
+a bar plot, as follows :
+
+```{r fatalities_plot}
+g <- ggplot(fatalitiesByEvType, aes(x=EVTYPE,y=FATALITIES)) 
+g + 
+    # stat="identity" : use y=FATALITIES instead of the default count(EVTYPE)
+    geom_bar(stat="identity", fill="coral4") +
+    # plot a horizontal bar graph with the max value bar at the top position:
+    scale_x_discrete(limits=rev(fatalitiesByEvType$EVTYPE)) +coord_flip()+
+    # make sure that the title and labels are explicit and readable
+    labs(y="Fatalities")+
+    labs(x="Weather event type")+
+    labs(title="Total fatalities due to weather events (1950-2011)")
+```
+
+The plot is quite explicit : 
+
+1. tornadoes are the most lethal weather event type
+2. in second position comes high temperature (excessive heat and heat)
+3. in third position comes flash floods / floods
+
+### Injuries
+
+The total number of injuries per weather event type can be displayed with
+a bar plot, as follows :
+
+```{r injuries_plot}
+g <- ggplot(injuriesByEvType, aes(x=EVTYPE,y=INJURIES)) 
+g + 
+    # stat="identity" : use y=INJURIES instead of the default count(EVTYPE)
+    geom_bar(stat="identity",fill="coral2") + 
+    # plot a horizontal bar graph with the max value bar at the top position:
+    scale_x_discrete(limits=rev(injuriesByEvType$EVTYPE)) +coord_flip()+
+    # make sure that the title and labels are explicit and readable
+    labs(y="Injuries")+
+    labs(x="Weather event type")+
+    labs(title="Total injuries due to weather events (1950-2011)")
+```
+
+As with fatalities, most of the injuries are caused by tornadoes.
+But there are some significant differences between fatalities and injuries results :
+
+* Unsurprisingly, wathever the weather event type,  the number of injuries is much higher than the number of fatalities (e.g. for tornadoes : 90000 vs 6000)
+* TSTM Winds and lightnings cause a comparable number of injuries than heat and floods. Regardind fatalties winds and lightnings are not as prominent.
+
+### Property and crop damages
+
+To display property and crop damages on the same figure, we'll use a stack
+bar plot. In order to exploit ggpot2 native features, we'll have to reshape the
+dataset "damagesByEvType".
+
+From the dataset "damagesByEvType" which has the following columns :
+
+* EVTYPE 
+* PROPERTY.DAMAGE
+* CROP.DAMAGE
+* TOTAL
+
+We'll build a new dataset "damagesPlotDat" which as the folllowing columns :
+
+* Event.Type (=EVTYPE)
+* Damage.Type (property/crop)
+* Damage.Cost
+
+This can be done with a few lines of code thanks to the package "reshape" :
+
+```{r}
+damagesPlotData <- damagesByEvType %>%  select(EVTYPE,property=PROPERTY.DAMAGE,crop=CROP.DAMAGE )
+damagesPlotData <- melt(data = as.data.frame(damagesPlotData),id=c("EVTYPE"))
+names(damagesPlotData) <- c("Event.Type","Damage.Type","Damage.Cost")
+```
+
+Plotting this reshaped dataset is now quite straight forward :
+
+```{r damages_plot}
+g <- ggplot(data = damagesPlotData, aes(x = Event.Type, y = Damage.Cost, fill = Damage.Type)) 
+g + 
+    # stat="identity" : use y=Damage.Cost instead of the default count(EVTYPE)
+    geom_bar(stat="identity") +
+    # plot a horizontal bar graph with the max value bar at the top position:
+    scale_x_discrete(limits=rev(damagesByEvType$EVTYPE)) + coord_flip()+
+    # make sure that the title and labels are explicit and readable
+    labs(y="Damage cost")+
+    labs(x="Weather event type")+
+    scale_fill_discrete(name="Damage type") +
+    labs(title="Total damages cost due to weather events (1950-2011)")
+```
+
+From this plot we conclude that :
+
+* The main cause of material damages are floods, hurricanes/typhoons, tornadoes and storm surges
+* On the whole property damages are much higher than crop damages
+  (even if they are exceptions : droughts for instance
+  cause significantly higher crop damages than property damages)
