@@ -1,0 +1,53 @@
+---
+title: "Machine Learning Course Project"
+author: "Daniel Pont"
+date: '2019-03-02'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+```
+
+## Executive Summary
+This report is the final product of the Regression Models Course Project.
+We try to answer the following questions about the \href{https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html}{Motor Trend Car Road Tests}
+dataset :
+
+* Is an automatic or manual transmission better for MPG ?
+
+* What is the MPG difference quantification between automatic and manual transmissions ?
+
+We'll show that a manual transmission is better than an automatic one.  Quantitatively the factor by witch the MPG is multiplied when switching from an automatic to a manual transmission is in the interval  [0.05,4.12] with a 85% confidence. So the type of transmission has an impact on the MPG value but the quantification is not obvious. 
+
+## 1) Reading in data    
+
+```{r read_data, message=FALSE, warning=FALSE}
+
+training <- read.csv(file="./data/pml-training.csv", header=TRUE, sep=",") %>%
+    select(roll_belt,pitch_belt,yaw_belt,total_accel_belt,gyros_belt_x,gyros_belt_y,gyros_belt_z,accel_belt_x,accel_belt_y,accel_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,roll_arm,pitch_arm,yaw_arm,total_accel_arm,gyros_arm_x,gyros_arm_y,gyros_arm_z,accel_arm_x,accel_arm_y,accel_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,roll_dumbbell,pitch_dumbbell,yaw_dumbbell,total_accel_dumbbell,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,roll_forearm,pitch_forearm,yaw_forearm,total_accel_forearm,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z,classe)
+
+testing <- read.csv(file="./data/pml-testing.csv", header=TRUE, sep=",") %>%
+    select(roll_belt,pitch_belt,yaw_belt,total_accel_belt,gyros_belt_x,gyros_belt_y,gyros_belt_z,accel_belt_x,accel_belt_y,accel_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,roll_arm,pitch_arm,yaw_arm,total_accel_arm,gyros_arm_x,gyros_arm_y,gyros_arm_z,accel_arm_x,accel_arm_y,accel_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,roll_dumbbell,pitch_dumbbell,yaw_dumbbell,total_accel_dumbbell,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,roll_forearm,pitch_forearm,yaw_forearm,total_accel_forearm,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z)
+
+```
+
+
+	
+## 2) Training model with random forrest and cross validation
+
+```{r training, message=FALSE, warning=FALSE}
+library(caret)
+control <- trainControl(method="cv", number=5,search="random")
+seed <- 7
+metric <- "Accuracy"
+set.seed(seed)
+rf_random <- train(classe~., data=training, method="rf", metric=metric, tuneLength=10, trControl=control)
+print(rf_random)
+plot(rf_random)
+```
+
