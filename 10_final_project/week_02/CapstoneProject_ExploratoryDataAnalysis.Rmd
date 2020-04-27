@@ -1,0 +1,16 @@
+---
+title: "Capstone Project - Exploratory Data Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Introduction
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) document written for the capstone project of the  [Data Science Coursera Specialization](https://www.coursera.org/specializations/jhu-data-science). More specifically it aims to adress the task 2 of the capstone project : "Exploratory Data Analysis" by providing the following elements :
+
+1. Basic summaries of the data files :  word counts, line counts and basic data tables
+
+2. Basic plots, such as histograms to illustrate features of the data
+
+

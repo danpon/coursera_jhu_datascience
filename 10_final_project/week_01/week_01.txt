@@ -1,0 +1,38 @@
+1. The  "en_US.blogs.txt"  file is how many megabytes?
+
+ 200
+ 
+ Do  "ls -alh" "in the "Coursera-Swiftkey/final/en_US" directory.
+ 
+2. The "en_US.twitter.txt" has how many lines of text ?
+
+WRONG : Around 200K
+
+2Millions
+
+3. What is the length of the longest line seen in any of the three en_US data sets?
+
+Over 40K in blogs dataset
+
+
+4.In the en_US twitter data set, if you divide the number of lines where the word "love" (all lowercase) occurs by 
+the number of lines the word "hate" (all lowercase) occurs, about what do you get?
+
+4
+
+grep "love" en_US.twitter wc−l)
+hate=$(grep"hate" en_US.twitter.txt wc−l)
+
+
+5. The one tweet in the en_US twitter data set that matches the word "biostats" says what?
+
+They haven't studied for their biostat exam
+
+6. How many tweets have the exact characters "A computer once beat me at chess, but it was no match for me at kickboxing". 
+  (I.e. the line matches those characters exactly
+  
+  3
+  
+  
+  grep-x"Acomputeroncebeatmeatchess,butitwasnomatchformeatkickboxing"en_US.twitter.txtwc−l∣
+
