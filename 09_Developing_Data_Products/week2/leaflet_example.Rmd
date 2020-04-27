@@ -1,0 +1,22 @@
+---
+title: "R leaflet"
+author: "Daniel Pont"
+date: "17 mars 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown Leaflet
+This is a simple R Markdown displaying an interactive leaflet map.
+
+
+```{r lealflet}
+library(leaflet)
+
+leaflet() %>% addTiles() %>% 
+    setView(lng = 4.836615, lat = 45.767910 , zoom = 17)  %>%
+    addMarkers(lng=4.836615, lat=45.767910,  popup="Opera de Lyon")
+```

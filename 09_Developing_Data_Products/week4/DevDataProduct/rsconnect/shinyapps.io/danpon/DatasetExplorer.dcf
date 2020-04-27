@@ -1,0 +1,12 @@
+name: DatasetExplorer
+title: DatasetExplorer
+username:
+account: danpon
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 827817
+bundleId: 1977340
+url: https://danpon.shinyapps.io/DatasetExplorer/
+when: 1554061754.31006
+asMultiple: FALSE
+asStatic: FALSE

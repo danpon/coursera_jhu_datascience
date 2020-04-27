@@ -1,0 +1,20 @@
+---
+title: "R Markdown Presentation & Plotly"
+author: "Daniel Pont"
+date: "26 mars 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+## Interactive Plot with Plotly
+
+```{r pressure,echo = FALSE,message=FALSE,warning=FALSE}
+library(plotly)
+plot_ly(data = pressure, x = ~temperature, y = ~pressure)
+```
+
